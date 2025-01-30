@@ -31,4 +31,15 @@ Resources:
       AvailabilityZone: us-west-2a
       Tags:
        - Key: Name
-         Value: appsubnet         
+         Value: appsubnet 
+#lmsdbsubnet
+  lmsdbSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref lmsVPC
+      CidrBlock: 10.0.32.0/20
+      AvailabilityZone: us-west-2a
+      Tags:
+       - Key: Name
+         Value: dbsubnet           
+
