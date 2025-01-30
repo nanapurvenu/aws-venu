@@ -91,6 +91,15 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId:
         Ref: lmsInternetGateway 
+#lmsprivaterouttable 
+  lmsprivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:  
+        Ref: lmsVPC
+      Tags:
+       - Key: Name
+         Value: private RT        
             
   
         
