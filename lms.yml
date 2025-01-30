@@ -57,3 +57,21 @@ Resources:
         Ref: lmsVPC
       InternetGatewayId:
         Ref: lmsInternetGateway
+#lmspublicRouttable 
+  lmspublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:  
+        Ref: lmsVPC
+      Tags:
+       - Key: Name
+      Value: public RT  
+#lmswebSubnetRouteTableAssociation
+  lmswebSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: lmswebSubnet
+      RouteTableId:
+        Ref: lmspublicRouteTable        
+        
