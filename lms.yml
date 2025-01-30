@@ -81,6 +81,16 @@ Resources:
       SubnetId:
         Ref: lmswebSubnet
       RouteTableId:
-        Ref: lmspublicRouteTable        
-
+        Ref: lmspublicRouteTable 
+#lmsCarrierRoute
+  lmsCarrierRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: lmspublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: lmsInternetGateway 
+            
+  
         
