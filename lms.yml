@@ -41,5 +41,12 @@ Resources:
       AvailabilityZone: us-west-2a
       Tags:
        - Key: Name
-         Value: dbsubnet           
+         Value: dbsubnet    
+#lmsinternetgateway
+  lmsInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+       - Key: Name
+         Value: InternetGateway               
 
