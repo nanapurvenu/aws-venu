@@ -74,5 +74,13 @@ Resources:
         Ref: lmsappSubnet
       RouteTableId:
         Ref: lmspublicRouteTable
+#lmswebSubnetRouteTableAssociation
+  lmswebSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: lmswebSubnet
+      RouteTableId:
+        Ref: lmspublicRouteTable        
 
         
