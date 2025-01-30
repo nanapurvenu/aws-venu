@@ -12,3 +12,13 @@ Resources:
       Tags:
        - Key: Name
          Value: lmsvpc
+#lmswebsubnet
+  lmswebSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref lmsVPC
+      CidrBlock: 10.0.0.0/20
+      AvailabilityZone: us-west-2a
+      Tags:
+       - Key: Name
+         Value: websubnet         
