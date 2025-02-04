@@ -140,4 +140,13 @@ Resources:
       Egress: true
       RuleAction: allow
       CidrBlock: 0.0.0.0/0
+#lmsappSubnetNetworkAclAssociation    
+  lmsappSubnetNetworkAclAssociation:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId:
+        Ref: lmsappSubnet
+      NetworkAclId:
+        Ref: lmsNetworkAcl       
+     
         
