@@ -214,7 +214,7 @@ Resources:
   EcommdbInstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Allow ssh & postgres to client host
+      GroupDescription: Allow ssh & mysql to client host
       VpcId: !Ref EcommVPC
       SecurityGroupIngress:
         - IpProtocol: tcp
