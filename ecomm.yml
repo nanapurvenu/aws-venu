@@ -19,6 +19,7 @@ Resources:
       VpcId: !Ref EcommVPC
       CidrBlock: 10.0.0.0/20
       AvailabilityZone: us-west-2a
+      MapPublicIpOnLaunch: true
       Tags:
        - Key: Name
          Value: websubnet         
@@ -29,6 +30,7 @@ Resources:
       VpcId: !Ref EcommVPC
       CidrBlock: 10.0.16.0/20
       AvailabilityZone: us-west-2a
+      MapPublicIpOnLaunch: true
       Tags:
        - Key: Name
          Value: appsubnet 
@@ -39,6 +41,7 @@ Resources:
       VpcId: !Ref EcommVPC
       CidrBlock: 10.0.32.0/20
       AvailabilityZone: us-west-2a
+      MapPublicIpOnLaunch: false
       Tags:
        - Key: Name
          Value: dbsubnet    
