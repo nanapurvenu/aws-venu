@@ -1,0 +1,236 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Ecomm application
+# Resources section
+Resources:
+#Ecomm VPC
+  EcommVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+       - Key: Name
+         Value: Ecommvpc
+#Ecommwebsubnet
+  EcommwebSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref EcommVPC
+      CidrBlock: 10.0.0.0/20
+      AvailabilityZone: us-west-2a
+      Tags:
+       - Key: Name
+         Value: websubnet         
+#Ecommappsubnet
+  EcommappSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref EcommVPC
+      CidrBlock: 10.0.16.0/20
+      AvailabilityZone: us-west-2a
+      Tags:
+       - Key: Name
+         Value: appsubnet 
+#Ecommdbsubnet
+  EcommdbSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref EcommVPC
+      CidrBlock: 10.0.32.0/20
+      AvailabilityZone: us-west-2a
+      Tags:
+       - Key: Name
+         Value: dbsubnet    
+#Ecomminternetgateway
+  EcommInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+       - Key: Name
+         Value: InternetGateway    
+#Ecomm AttachInternetGateway                   
+  EcommAttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: EcommVPC
+      InternetGatewayId:
+        Ref: EcommInternetGateway
+#Ecommpublicrouttable 
+  EcommpublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:  
+        Ref: EcommVPC
+      Tags:
+       - Key: Name
+         Value: public RT  
+#EcommappSubnetRouteTableAssociation
+  EcommappSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: EcommappSubnet
+      RouteTableId:
+        Ref: EcommpublicRouteTable
+#EcommwebSubnetRouteTableAssociation
+  EcommwebSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: EcommwebSubnet
+      RouteTableId:
+        Ref: EcommpublicRouteTable 
+#EcommCarrierRoute
+  EcommCarrierRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: EcommpublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: EcommInternetGateway 
+#Ecommprivaterouttable 
+  EcommprivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:  
+        Ref: EcommVPC
+      Tags:
+       - Key: Name
+         Value: private RT   
+#EcommdbSubnetRouteTableAssociation
+  EcommdbSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: EcommdbSubnet
+      RouteTableId:
+        Ref: EcommprivateRouteTable
+#EcommNetworkAcl          
+  EcommNetworkAcl:
+    Type: AWS::EC2::NetworkAcl
+    Properties:
+      VpcId:
+        Ref: EcommVPC
+      Tags:
+       - Key: Name
+         Value: EcommNetworkAcl 
+#NACL rules         
+  EcommInboundRule:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      NetworkAclId:
+        Ref: EcommNetworkAcl
+      RuleNumber: 100
+      Protocol: 6
+      RuleAction: allow
+      CidrBlock: 0.0.0.0/0
+      PortRange:
+        From: 22
+        To: 65535
+  EcommOutboundRule:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      NetworkAclId:
+        Ref: EcommNetworkAcl
+      RuleNumber: 100
+      Protocol: -1
+      Egress: true
+      RuleAction: allow
+      CidrBlock: 0.0.0.0/0
+#EcommwebSubnetNetworkAclAssociation    
+  EcommwebSubnetNetworkAclAssociation:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId:
+        Ref: EcommwebSubnet
+      NetworkAclId:
+        Ref: EcommNetworkAcl 
+#EcommappSubnetNetworkAclAssociation    
+  EcommappSubnetNetworkAclAssociation:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId:
+        Ref: EcommappSubnet
+      NetworkAclId:
+        Ref: EcommNetworkAcl      
+#EcommdbSubnetNetworkAclAssociation    
+  EcommdbSubnetNetworkAclAssociation:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId:
+        Ref: EcommdbSubnet
+      NetworkAclId:
+        Ref: EcommNetworkAcl
+#EcommwebInstanceSecurityGroup        
+  EcommwebInstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow ssh & http to client host
+      VpcId: !Ref EcommVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0   
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: 0.0.0.0/0           
+      Tags:
+        - Key: Name
+          Value: web-SG 
+#EcommappInstanceSecurityGroup        
+  EcommappInstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow ssh & http to client host
+      VpcId: !Ref EcommVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0   
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: 0.0.0.0/0           
+      Tags:
+        - Key: Name
+          Value: app-SG 
+#EcommdbInstanceSecurityGroup        
+  EcommdbInstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow ssh & postgres to client host
+      VpcId: !Ref EcommVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0   
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: 0.0.0.0/0           
+      Tags:
+        - Key: Name
+          Value: db-SG  
+                   
